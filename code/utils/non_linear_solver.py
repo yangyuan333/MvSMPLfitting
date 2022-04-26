@@ -87,7 +87,7 @@ def non_linear_solver(
             len(body_pose_prior_weights)), "Number of weight must match"
     
     # process keypoints
-    keypoint_data = torch.tensor(keypoints, dtype=dtype)
+    keypoint_data = torch.tensor(keypoints, dtype=dtype)[:, :1, :, :]
     gt_joints = keypoint_data[:, :, :, :2]
     if use_joints_conf:
         joints_conf = []
@@ -209,7 +209,7 @@ def non_linear_solver(
     final_loss_val = 0
     opt_start = time.time()
 
-    vis=None
+    vis=False
     visFlag=False
     if visFlag:
         import open3d as o3d
@@ -225,13 +225,6 @@ def non_linear_solver(
                 curr_weights['body_pose_weight'] *= 0.15
 
         body_params = list(model.parameters()) # shape + t + r + s
-
-        # print("--------------------------------")
-        # for name,param in model.named_parameters():
-        #     print(name)
-        #     print(param.shape)
-        #     print(param.requires_grad)
-        #     print("---------------------------------")
 
         final_params = list(
             filter(lambda x: x.requires_grad, body_params))
@@ -272,8 +265,8 @@ def non_linear_solver(
                 torch.cuda.synchronize()
             stage_start = time.time()
         # if curr_weights['contact_loss_weight'] < 1.0:
-        if curr_weights['sdf_penetration_weights'] < 0.5:
-        # if opt_idx < 6:
+        # if curr_weights['sdf_penetration_weights'] < 0.5:
+        if opt_idx < 4:
             final_loss_val = monitor.run_fitting(
                 body_optimizer,
                 closure, final_params,

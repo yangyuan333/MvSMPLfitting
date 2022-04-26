@@ -33,6 +33,7 @@ def main(**args):
     s_last = None # the name of last sequence
     setting['seq_start'] = False # indicate the first frame of the sequence
     for idx, data in enumerate(dataset_obj):
+
         serial = data['serial']
         if serial != s_last:
             setting['seq_start'] = True
@@ -142,5 +143,6 @@ def transProx2coco(js):
     return js[idx]
 
 if __name__ == "__main__":
+
     args = parse_config()
     main(**args)

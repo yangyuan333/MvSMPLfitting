@@ -71,59 +71,7 @@ def main(**args):
             init_guess(setting, data, use_torso=True, **args) ## 根据2djoints->3djoints 估计初始旋转和平移
         else:
             init_guess_nonlinear(setting, data, results, use_torso=True, **args)
-        '''
-        smplify-x 非线性初始化
-        gt_joints = torch.tensor(data['keypoints'][0][:,:,:2]).to(device=setting['device'],dtype=setting['dtype'])
-        body_model = setting['model']
-        init_t = guess_init(
-            body_model,gt_joints,[[5,12],[2,9]],
-            use_vposer=args['use_vposer'], vposer=setting['vposer'],
-            pose_embedding=setting['pose_embedding'],
-            model_type=args['model_type'],
-            focal_length=setting['camera'][0].focal_length_x, dtype=setting['dtype'])
-        from utils import fitting
-        ## 补充非线性 全局变换优化
-        camera_loss = fitting.create_loss('camera_init',
-                                        trans_estimation=init_t,
-                                        init_joints_idxs=torch.tensor([9,12,2,5]).to(device=setting['device']),
-                                        depth_loss_weight=0.0,
-                                        camera_mode='fixed',
-                                        dtype=setting['dtype']).to(device=setting['device'])
-        camera_loss.trans_estimation[:] = init_t
-        monitor = fitting.FittingMonitor(batch_size=1, **args)
-        body_mean_pose = torch.zeros([1, 32],
-                                     dtype=setting['dtype'])
-        body_model.reset_params(body_pose=body_mean_pose, transl=init_t)
-        camera_opt_params = [body_model.transl, body_model.global_orient]
-        from optimizers import optim_factory
-        camera_optimizer, camera_create_graph = optim_factory.create_optimizer(
-            camera_opt_params,
-            **args)
-        fit_camera = monitor.create_fitting_closure(
-            camera_optimizer, body_model, setting['camera'][0], gt_joints,
-            camera_loss, create_graph=camera_create_graph,
-            use_vposer=args['use_vposer'], vposer=setting['vposer'],
-            pose_embedding=setting['pose_embedding'],
-            scan_tensor=None,
-            return_full_pose=False, return_verts=False)
-        cam_init_loss_val = monitor.run_fitting(camera_optimizer,
-                                                fit_camera,
-                                                camera_opt_params, body_model,
-                                                use_vposer=args['use_vposer'],
-                                                pose_embedding=setting['pose_embedding'],
-                                                vposer=setting['vposer'])
-        orient = body_model.global_orient.detach().cpu().numpy()
-        body_transl = body_model.transl.clone().detach()
-        from collections import defaultdict
-        new_params = defaultdict(transl=body_transl,
-                                     global_orient=orient,
-                                     body_pose=body_mean_pose)
-        body_model.reset_params(**new_params)
-        if args.get('use_vposer'):
-            with torch.no_grad():   
-                setting['pose_embedding'].fill_(0)
-        '''
-
+        
         fix_params(setting, scale=setting['fixed_scale'], shape=setting['fixed_shape']) ## 设置第一步初始化的全局旋转平移，选择是否优化scale和shape
         # linear solve
         print("linear solve, to do...")
@@ -143,9 +91,17 @@ def transProx2coco(js):
 
 if __name__ == "__main__":
 
+    import json
+    import glob
+    import os
+    for path in glob.glob(os.path.join(R'H:\YangYuan\ProjectData\HumanObject\dataset\PROX\prox_quantiative_dataset\keypoints\vicon_03301_01','*')):
+        print(os.path.basename(path))
+        data = json.load(open(path,'rb'))
+        print(1)
+
     sys.argv = [
         "",
-        "--config=cfg_files/fit_smpl_test.yaml",
+        "--config=cfg_files/fit_smpl_Prox.yaml",
         "--global_init_type=linear",
         "--use_hands=True",
         "--use_face=True",
@@ -153,9 +109,9 @@ if __name__ == "__main__":
         "--use_sdf=True",
         "--use_foot_contact=False",
         "--pose_format=coco25",
-        "--scene=H:\YangYuan\ProjectData\HumanObject\dataset\GPA-testset\scenes\\0000_hr.obj",
+        "--scene=H:\YangYuan\ProjectData\HumanObject\dataset\PROX\prox_quantiative_dataset\scenes\\vicon_final.obj",
         "--body_segments_dir=H:\\YangYuan\\Code\\phy_program\\MvSMPLfitting\\body_segments",
-        "--output_folder=outputGPA\\0000_Camera00"
+        "--output_folder=outputProx"
         ]
     args = parse_config()
     main(**args)
