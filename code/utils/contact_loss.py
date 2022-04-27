@@ -143,7 +143,8 @@ class ContactLoss(nn.Module):
         body_v_normals = body_v_normals / torch.norm(body_v_normals, 2, dim=1, keepdim=True)
         contact_body_verts_normals = body_v_normals[self.contact_verts_ids, :]
         contact_scene_normals = self.scene_vn[:, idx1.squeeze().to(dtype=torch.long), :].squeeze()
-        angles = torch.asin(torch.norm(torch.cross(contact_body_verts_normals, contact_scene_normals), 2, dim=1, keepdim=True)) *180 / np.pi
+        # angles = torch.asin(torch.norm(torch.cross(contact_body_verts_normals, contact_scene_normals), 2, dim=1, keepdim=True)) *180 / np.pi
+        angles = torch.acos(torch.sum(contact_body_verts_normals*contact_scene_normals,dim=1,keepdim=True))
         valid_contact_mask = (angles.le(self.contact_angle) + angles.ge(180 - self.contact_angle)).ge(1)
         valid_contact_ids = valid_contact_mask.squeeze().nonzero().squeeze()
         contact_dist = self.contact_robustifier(contact_dist[:, valid_contact_ids].sqrt())
@@ -154,7 +155,7 @@ class ContactLoss(nn.Module):
         #     contact_foot_vertices_y = vertices[:, self.foot_contact_verts_ids, 1]
         #     foot_dist = self.contact_robustifier(contact_foot_vertices_y)
         #     return contact_dist, foot_dist
-        return contact_dist
+        return contact_dist,self.contact_verts_ids.__len__()
 
 '''
 class ContactLoss(nn.Module):

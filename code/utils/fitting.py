@@ -491,9 +491,12 @@ class SMPLifyLoss(nn.Module):
 
         contact_loss = 0.0
         if (self.use_contact and self.contact_loss_weight.item() > 0):
-            contact_dist = self.contact_loss(body_model_output,body_model_faces)
+            contact_dist,l = self.contact_loss(body_model_output,body_model_faces)
             contact_loss = self.contact_loss_weight * contact_dist.mean()
-
+            # print('################################')
+            # print(l)
+            # print(contact_loss)
+            # print('################################')
         sdf_penetration_loss = 0.0
         if self.use_sdf and self.sdf_penetration_weights > 0.0:
             vertices = body_model_output.vertices
