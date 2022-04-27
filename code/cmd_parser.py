@@ -264,6 +264,12 @@ def parse_config(argv=None):
                         default=[0.0, 0.0, 0.0, 2.0], type=float,
                         nargs='*',
                         help='The weight for the scene sdf loss term')
+
+    parser.add_argument('--use_GT_contact',
+                        type=lambda arg: arg.lower() == 'true',
+                        default=False,
+                        help='Use GT contact for the optim')
+    
     args = parser.parse_args()
     args_dict = vars(args)
     return args_dict

@@ -48,6 +48,7 @@ def main(**args):
         img_paths = []
         imgs = []
         cameras = []
+        GT_contacts = []
         for v in range(len(keypoints)):
             if keypoints[v] is not None:
                 extrinsics.append(setting['extrinsics'][v])
@@ -56,6 +57,7 @@ def main(**args):
                 keyps.append(keypoints[v])
                 img_paths.append(data['img_path'][v])
                 imgs.append(data['img'][v])
+                GT_contacts.append(data['GT_contacts'][v])
                 views += 1
 
         setting['views'] = views
@@ -65,6 +67,7 @@ def main(**args):
         data['img'] = imgs
         data['img_path'] = img_paths
         data['keypoints'] = keyps
+        data['GT_contacts'] = GT_contacts
         print('Processing: {}'.format(data['img_path']))
 
         if setting['global_init_type'] == 'linear':
@@ -101,7 +104,7 @@ if __name__ == "__main__":
 
     sys.argv = [
         "",
-        "--config=cfg_files/fit_smpl_Prox.yaml",
+        "--config=cfg_files/fit_smpl_GTcontact.yaml",
         "--global_init_type=linear",
         "--use_hands=True",
         "--use_face=True",
@@ -111,7 +114,8 @@ if __name__ == "__main__":
         "--pose_format=coco25",
         "--scene=H:\YangYuan\ProjectData\HumanObject\dataset\PROX\prox_quantiative_dataset\scenes\\vicon_final.obj",
         "--body_segments_dir=H:\\YangYuan\\Code\\phy_program\\MvSMPLfitting\\body_segments",
-        "--output_folder=outputProx"
+        "--output_folder=outputProx_GTcontact_s1_06",
+        "--use_GT_contact=True"
         ]
     args = parse_config()
     main(**args)

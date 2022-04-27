@@ -72,7 +72,10 @@ def non_linear_solver(
     device = setting['device']
     dtype = setting['dtype']
     vposer = setting['vposer']
+    use_GT_contact = setting['use_GT_contact']
     keypoints = data['keypoints']
+    if use_GT_contact:
+        GT_contacts = data['GT_contacts']
     joint_weights = setting['joints_weight']
     model = setting['model']
     camera = setting['camera']
@@ -95,6 +98,7 @@ def non_linear_solver(
             conf = v[:, :, 2].reshape(1, -1)
             conf = conf.to(device=device, dtype=dtype)
             joints_conf.append(conf)
+
 
     if use_3d: ## 估计的3djoint只用于估计初始旋转和平移
         joints3d = data['3d_joint'][0]
@@ -182,6 +186,7 @@ def non_linear_solver(
                                sdf=setting['sdf'],
                                sdf_normals=setting['sdf_normals'],
                                use_foot_contact=use_foot_contact,
+                               GT_contacts = data['GT_contacts'],
                                **kwargs)
     loss = loss.to(device=device)
 
@@ -209,8 +214,8 @@ def non_linear_solver(
     final_loss_val = 0
     opt_start = time.time()
 
-    vis=False
-    visFlag=False
+    vis=True
+    visFlag=True
     if visFlag:
         import open3d as o3d
         vis = o3d.visualization.Visualizer()

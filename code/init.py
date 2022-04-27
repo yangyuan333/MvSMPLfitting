@@ -281,5 +281,6 @@ def init(**kwarg):
     setting['global_init_type'] = kwarg.get('global_init_type','linear')
     setting['scene'] = kwarg.get('scene')
     setting['body_segments_dir'] = kwarg.get('body_segments_dir')
+    setting['use_GT_contact'] = kwarg.get('use_GT_contact')
 
     return dataset_obj, setting

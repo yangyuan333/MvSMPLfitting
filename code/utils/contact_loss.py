@@ -55,31 +55,28 @@ class FootoContactLoss(nn.Module):
 
 class ContactLoss(nn.Module):
 
-    def __init__(self, body_model, scene_path, rho_contact, contact_angle, contact_verts_ids=None, body_segments_dir=None, dtype=torch.float32, use_cuda=True, **kwargs):
+    def __init__(self, body_model, scene_path, rho_contact, contact_angle, contact_verts_ids=None, body_segments_dir=None, dtype=torch.float32, use_cuda=True,use_GT_contact=False,GT_contacts=None, **kwargs):
         super(ContactLoss, self).__init__()
         CONTACT_BODY_PARTS=['back','gluteus','L_Hand','L_Leg','R_Hand','R_Leg','thighs']
         self.rho_contact = rho_contact
         self.contact_angle = contact_angle
         # self.use_foot_contact = use_foot_contact
-        if contact_verts_ids is not None:
-            self.contact_verts_ids = contact_verts_ids
+
+        self.use_GT_contact = use_GT_contact
+        if self.use_GT_contact:
+            self.contact_verts_ids = np.where(GT_contacts)[1]
         else:
-            import json
-            self.contact_verts_ids = []
-            for part in CONTACT_BODY_PARTS:
-                with open(os.path.join(body_segments_dir, part + '.json'), 'r') as f:
-                    data = json.load(f)
-                    self.contact_verts_ids.append(list(set(data["verts_ind"])))
-            self.contact_verts_ids = np.concatenate(self.contact_verts_ids)
-            # if self.use_foot_contact:
-            #     self.foot_contact_verts_ids = []
-            #     with open(os.path.join(body_segments_dir, 'L_Leg' + '.json'), 'r') as f:
-            #         data = json.load(f)
-            #         self.foot_contact_verts_ids.append(list(set(data["verts_ind"])))
-            #     with open(os.path.join(body_segments_dir, 'R_Leg' + '.json'), 'r') as f:
-            #         data = json.load(f)
-            #         self.foot_contact_verts_ids.append(list(set(data["verts_ind"])))
-        
+            if contact_verts_ids is not None:
+                self.contact_verts_ids = contact_verts_ids
+            else:
+                import json
+                self.contact_verts_ids = []
+                for part in CONTACT_BODY_PARTS:
+                    with open(os.path.join(body_segments_dir, part + '.json'), 'r') as f:
+                        data = json.load(f)
+                        self.contact_verts_ids.append(list(set(data["verts_ind"])))
+                self.contact_verts_ids = np.concatenate(self.contact_verts_ids)
+            
         if use_cuda and torch.cuda.is_available():
             device = torch.device('cuda')
         vertices = body_model(return_verts=True, body_pose= torch.zeros((1, 63), dtype=dtype, device=device)).vertices

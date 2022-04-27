@@ -277,6 +277,7 @@ class FittingData(Dataset):
 
     def __init__(self, data_folder, img_folder='images',
                     keyp_folder='keypoints',
+                    contact_folder='contact',
                     use_hands=False,
                     use_face=False,
                     dtype=torch.float32,
@@ -286,6 +287,7 @@ class FittingData(Dataset):
                     pose_format='coco17',
                     use_3d=False,
                     use_hip=True,
+                    use_GT_contact=False,
                     **kwargs):
         super(FittingData, self).__init__()
 
@@ -298,6 +300,8 @@ class FittingData(Dataset):
         self.joints_to_ign = joints_to_ign
         self.use_face_contour = use_face_contour
 
+        self.use_GT_contact = use_GT_contact
+
         self.pose_format = pose_format
 
         self.num_joints = (self.NUM_BODY_JOINTS +
@@ -305,6 +309,8 @@ class FittingData(Dataset):
 
         self.img_folder = osp.join(data_folder, img_folder)
         self.keyp_folder = osp.join(data_folder, keyp_folder)
+        if (self.use_GT_contact):
+            self.contact_folder = osp.join(data_folder, contact_folder)
 
         img_serials = sorted(os.listdir(self.img_folder))
         self.img_paths = []
@@ -368,6 +374,7 @@ class FittingData(Dataset):
     def read_item(self, img_paths):
         img = []
         keypoints = []
+        contacts = []
         joints3d = None
         for img_path in img_paths:
             img_ = cv2.imread(img_path).astype(np.float32)[:, :, ::-1] / 255.0
@@ -382,6 +389,14 @@ class FittingData(Dataset):
 
             keypoint_fn = osp.join(self.keyp_folder, serial, cam, img_fn + '_keypoints.json')
 
+            if (self.use_GT_contact):
+                contact_fn = osp.join(self.contact_folder, serial, cam, img_fn + '_contact.txt')
+                if not os.path.exists(contact_fn):
+                    contact_ = None
+                else:
+                    contact_tuple = np.loadtxt(contact_fn)
+                    contacts.append(contact_tuple)
+
             if not os.path.exists(keypoint_fn):
                 keypoints_ = None # keypoints may not exist
             else:
@@ -393,8 +408,12 @@ class FittingData(Dataset):
                     return {}
                 keypoints_ = np.stack(keyp_tuple.keypoints)
 
+
+
             img.append(img_)
             keypoints.append(keypoints_)
+
+
 
             if self.use_3d and joints3d is None and os.path.exists(keypoint_fn):
                 joints3d = read_joints(keypoint_fn, use_hands=self.use_hands,
@@ -407,7 +426,8 @@ class FittingData(Dataset):
                         'img_path': img_paths,
                         'keypoints': keypoints,
                         'img': img,
-                        '3d_joint': joints3d}
+                        '3d_joint': joints3d,
+                        'GT_contacts':contacts}
 
         return output_dict
 

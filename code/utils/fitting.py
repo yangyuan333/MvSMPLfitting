@@ -280,6 +280,8 @@ class SMPLifyLoss(nn.Module):
                  sdf_penetration_weights=0.0,
                  body_model=None,
                  use_cuda=True,
+                 use_GT_contact = False,
+                 GT_contacts=None,
                  **kwargs):
 
         super(SMPLifyLoss, self).__init__()
@@ -332,7 +334,9 @@ class SMPLifyLoss(nn.Module):
                 body_model,kwargs.get('scene'),
                 kwargs.get('rho_contact'),kwargs.get('contact_angle'),
                 body_segments_dir=kwargs.get('body_segments_dir'),
-                use_cuda=use_cuda
+                use_cuda=use_cuda,
+                use_GT_contact=use_GT_contact,
+                GT_contacts=GT_contacts
             )
         self.use_sdf = use_sdf
         if self.use_sdf:
