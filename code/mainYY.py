@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
     sys.argv = [
         "",
-        "--config=cfg_files/fit_smpl_GTcontact.yaml",
+        "--config=cfg_files/fit_smpl_Pose.yaml",
         "--global_init_type=linear",
         "--use_hands=True",
         "--use_face=True",
@@ -114,7 +114,7 @@ if __name__ == "__main__":
         "--pose_format=coco25",
         "--scene=H:\YangYuan\ProjectData\HumanObject\dataset\PROX\prox_quantiative_dataset\scenes\\vicon_final.obj",
         "--body_segments_dir=H:\\YangYuan\\Code\\phy_program\\MvSMPLfitting\\body_segments",
-        "--output_folder=outputProx_GTcontact",
+        "--output_folder=outputProx_Pose",
         "--use_GT_contact=True"
         ]
     args = parse_config()
