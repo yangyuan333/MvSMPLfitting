@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
     sys.argv = [
         "",
-        "--config=cfg_files/fit_smpl_Pose.yaml",
+        "--config=cfg_files/fit_smpl_without_contact.yaml",
         "--global_init_type=linear",
         "--use_hands=True",
         "--use_face=True",
@@ -112,10 +112,11 @@ if __name__ == "__main__":
         "--use_sdf=True",
         "--use_foot_contact=False",
         "--pose_format=coco25",
-        "--scene=H:\YangYuan\ProjectData\HumanObject\dataset\PROX\prox_quantiative_dataset\scenes\\vicon_final.obj",
+        "--scene=GPAFinal\\0000_Camera02\\0000_hr.obj",
         "--body_segments_dir=H:\\YangYuan\\Code\\phy_program\\MvSMPLfitting\\body_segments",
-        "--output_folder=outputProx_Pose",
-        "--use_GT_contact=True"
+        "--output_folder=outputGPA_GTcontact\\0000_Camera02",
+        "--use_GT_contact=True",
+        "--contact_suffix=.txt"
         ]
     args = parse_config()
     main(**args)

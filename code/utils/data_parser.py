@@ -311,6 +311,7 @@ class FittingData(Dataset):
         self.keyp_folder = osp.join(data_folder, keyp_folder)
         if (self.use_GT_contact):
             self.contact_folder = osp.join(data_folder, contact_folder)
+            self.contact_suffix = kwargs.get('contact_suffix')
 
         img_serials = sorted(os.listdir(self.img_folder))
         self.img_paths = []
@@ -390,7 +391,7 @@ class FittingData(Dataset):
             keypoint_fn = osp.join(self.keyp_folder, serial, cam, img_fn + '_keypoints.json')
 
             if (self.use_GT_contact):
-                contact_fn = osp.join(self.contact_folder, serial, cam, img_fn + '_contact.txt')
+                contact_fn = osp.join(self.contact_folder, serial, cam, img_fn + self.contact_suffix)
                 if not os.path.exists(contact_fn):
                     contact_ = None
                 else:

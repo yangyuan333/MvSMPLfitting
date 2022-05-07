@@ -270,6 +270,9 @@ def parse_config(argv=None):
                         default=False,
                         help='Use GT contact for the optim')
     
+    parser.add_argument('--contact_suffix', default='_contact.txt', type=str,
+                        help='contact suffix')
+
     args = parser.parse_args()
     args_dict = vars(args)
     return args_dict
