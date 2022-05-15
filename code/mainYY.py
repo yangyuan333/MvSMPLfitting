@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
     sys.argv = [
         "",
-        "--config=cfg_files/fit_smpl_without_contact.yaml",
+        "--config=cfg_files/fit_smpl_GTcontact_GPA_825.yaml",
         "--global_init_type=linear",
         "--use_hands=True",
         "--use_face=True",
@@ -112,11 +112,11 @@ if __name__ == "__main__":
         "--use_sdf=True",
         "--use_foot_contact=False",
         "--pose_format=coco25",
-        "--scene=GPAFinal\\0000_Camera02\\0000_hr.obj",
+        "--scene=dataGPA_825\\scene.obj",
         "--body_segments_dir=H:\\YangYuan\\Code\\phy_program\\MvSMPLfitting\\body_segments",
-        "--output_folder=outputGPA_GTcontact\\0000_Camera02",
-        "--use_GT_contact=True",
-        "--contact_suffix=.txt"
+        "--output_folder=Results\\testGPA",
+        "--use_GT_contact=False",
+        "--contact_suffix=_contact.txt"
         ]
     args = parse_config()
     main(**args)

@@ -214,8 +214,8 @@ def non_linear_solver(
     final_loss_val = 0
     opt_start = time.time()
 
-    vis=False
-    visFlag=False
+    vis=True
+    visFlag=True
     if visFlag:
         import open3d as o3d
         vis = o3d.visualization.Visualizer()
